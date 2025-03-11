@@ -4,18 +4,25 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	
+	"os"
+	"time"
 
+	"github.com/joho/godotenv"
 	_ "github.com/go-sql-driver/mysql" // Asegúrate de importar el controlador MySQL
 )
 
 func ConnectToDB() (*sql.DB, error) {
+	// Cargar variables de entorno desde .env
+	if err := godotenv.Load(); err != nil {
+		log.Println("No se pudieron cargar las variables de entorno")
+	}
+
 	// Leer variables de entorno
-	user := "root"
-	password := "Castro2005"
-	host := "localhost"
-	port := "3306" // Asegúrate de definir este valor en el archivo .env
-	nameDB := "y"
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	nameDB := os.Getenv("DB_DATABASE")
 
 	// Construir el DSN con el formato correcto
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, nameDB)
@@ -34,10 +41,10 @@ func ConnectToDB() (*sql.DB, error) {
 	}
 
 	// Configurar el pool de conexiones
-	db.SetMaxOpenConns(25)         // Máximo número de conexiones abiertas
-	db.SetMaxIdleConns(10)         // Máximo número de conexiones inactivas
-	db.SetConnMaxIdleTime(10)      // Tiempo máximo de inactividad en segundos
-	db.SetConnMaxLifetime(5 * 60)  // Vida máxima de una conexión en segundos
+	db.SetMaxOpenConns(25)             // Máximo número de conexiones abiertas
+	db.SetMaxIdleConns(10)             // Máximo número de conexiones inactivas
+	db.SetConnMaxIdleTime(time.Minute) // Tiempo máximo de inactividad
+	db.SetConnMaxLifetime(time.Minute * 5) // Vida máxima de una conexión
 
 	fmt.Println("Conexión exitosa a la base de datos")
 	return db, nil

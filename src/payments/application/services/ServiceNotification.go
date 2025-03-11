@@ -8,12 +8,12 @@ import (
 
 type ServiceNotification struct {
 	notification repositories.INotification
-	channel []chan domain.Payment
+	
 }
 
 func NewServiceNotification(notification repositories.INotification)*ServiceNotification{
 	return &ServiceNotification{notification: notification,
-		channel: make([]chan domain.Payment, 0),}
+}
 }
 
 func (sv *ServiceNotification) Execute(paymant domain.Payment) error{
@@ -25,15 +25,13 @@ func (sv *ServiceNotification) Execute(paymant domain.Payment) error{
 		return err
 	}
 
-	for _, subscriber := range sv.channel {
-		subscriber <- paymant
-	}
+	
 
 	return nil
 }
 
 func (sv *ServiceNotification) SubscribeForNotifications() chan domain.Payment {
 	subscriber := make(chan domain.Payment)
-	sv.channel = append(sv.channel, subscriber)
+	
 	return subscriber
 }

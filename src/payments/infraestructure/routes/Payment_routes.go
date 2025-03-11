@@ -12,5 +12,5 @@ func Routes(router *gin.Engine) {
 	createPaymentController := dependencies.GetCreatePaymentController()
 
 	routes.POST("/", createPaymentController.Execute) 
-	routes.GET("/notifications", createPaymentController.SubscribeForNotifications)
+
 }

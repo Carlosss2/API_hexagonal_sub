@@ -36,17 +36,3 @@ func (createPayment *CreatePaymentController) Execute(c *gin.Context){
 	c.JSON(http.StatusCreated, gin.H{"message": "pago registrado"})
 }
 
-func (c *CreatePaymentController) SubscribeForNotifications(ctx *gin.Context) {
-	subscriber := c.notificationService.SubscribeForNotifications()
-
-	select {
-	case notification := <-subscriber:
-
-		message := "Pago recibido: " + notification.Menssage
-		ctx.JSON(http.StatusOK, gin.H{"message": message})
-	case <-ctx.Done():
-
-		close(subscriber)
-		ctx.JSON(http.StatusRequestTimeout, gin.H{"error": "Request timeout"})
-	}
-}
